@@ -1,7 +1,6 @@
-.results #cityNBottom{
-    display: none;
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-
 .results .visible {
     display: block;
 }
@@ -20,6 +19,10 @@
     padding:2px 0px;
     cursor: pointer;
 }
+.cityNames ul{
+    list-style: none;
+    padding-left: 0;
+}
 
 .listElement:hover,.listElement:active, .listElement:focus{
     background-color: #dfe1e5;
@@ -31,7 +34,7 @@
 .listElement a{
     text-decoration: none;
     color:inherit;
-    font-size: 1.1em;
+    font-size: 16px;
     
 }
 .visible {
@@ -44,7 +47,7 @@
     display: none;
 }
 .normal{
-    font-weight: 500;
+    font-weight: 400;
 }
 .results .top_stripe{
     position: sticky;
@@ -137,6 +140,12 @@ body .inputSearch{
     align-self: flex-end;
 
 }
+body .inputSearch:focus{
+    outline:none;
+}
+.home .inputIcon-clear{
+    display: none;
+}
 .home .stripe-flex{
     background: #fff;
     display: flex;
@@ -174,4 +183,13 @@ body .stripe-flex:hover,.stripe-flex:active {
 
 .home #SearchButton{
     display: none;
+}
+
+.home #show{
+    display: none;
+}
+.results #show{
+    display: initial;
+    font-size: 2rem;
+    text-align: center;
 }
