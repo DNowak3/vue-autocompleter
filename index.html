@@ -8,29 +8,65 @@
     <script src="autocompleter.js"></script>
     <script src="cities.js"></script>
 </head>
+
 <body class="home">
     <div id="app">
-    <div>
-    <v-autocompleter v-bind:options="cities" ref="bottom" @enter='showResults'/>
+        <div id="example">
+            <h3>Przykład użycia autocompletera</h3>
+            <div>
+                <v-autocompleter v-bind:options="cities" ref="input" @enter='showResults' :value="googleSearch"
+                    @input="googleSearch = $event" />
+            </div>
+            <div id="show">
+                <p>Results</p>
+            </div>
+        </div>
+        <hr/>
+        <div id="description">
+            <h3>Przykładowa implementacja</h3>
+            <div class="light">
+                <pre>
+                  <code>
+                    &lt<b><span class="darkBlue">v-autocompleter</span> 
+                    <span class="lightBlue">v-bind:options</span>=<span class="green">"cities"</span>
+                    <span class="lightBlue">@enter</span>=<span class="green">"showResults"</span>
+                    <span class="lightBlue">:value</span>=<span class="green">"googleSearch"</span>
+                    <span class="lightBlue">@input</span>=<span class="green">"googleSearch = $event"</span> /&gt</b>
+                  </code>
+                </pre>
+            </div>
+            <h3>Opis</h3>
+            <div class="light">
+            <p><span class="important">vue-autocompleter</span> jest komponentem który działa na zasadzie wyszukiwarki Googla.
+            Po wpisaniu frazy w input wyświetla się lista podpowiedzi. Autocompleter wyszukuje propozycji w liście podanej jako props <span class="important">options</span>.
+            Jeżeli, któraś z odpowiedzi pasuje temu czego szukaliśmy możemy wybrać tę opcję poprzez kliknięcie jej na liście lub wybranie strzałkami a następnie wciścięcie klawisza enter.</p>
+            </div><h3>Props</h3>
+            <div class="light"><p><span class="important">options</span> przyjmuje zmienną typu Array, z której zczytuje wartości do listy propozycji</p>
+            <p><span class="important">value</span> odnosi się do wartości wprowadzanej do inputa znajdującego się w komponencie autocompleter</p>
+            </div><h3>Events</h3>
+            <div class="light">
+                <p><span class="important">@enter</span> pozwala na obsługę zdarzeń występujących po wciśnięciu w autocompleterze entera lub kliknięcia wybranej propozycji myszką</p>
+                <p><span class="important">@input</span> pozwala na obsługę eventów związanych z inputem znajdującym się w autocompleterze</p>
+            </div>
+        </div>
     </div>
-    <div id="show">
-        <p>Results</p>
-    </div>
-    </div>
-<script>
-            var app = new Vue({
-                el: '#app',
-                data:{
-                    cities: window.cities,
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                cities: window.cities.map(a => a.name),
+                googleSearch: ""
+
+            },
+            methods: {
+                showResults: function () {
+                    this.googleSearch = app.$refs.input.value;  
                     
-                },
-                methods:{
-                    showResults: function(){
-                        app.$refs.bottom.enterClicked()
-                        return this.change
-                    }
+                    return this.change
                 }
-                });
-</script>
+            }
+        });
+    </script>
 </body>
+
 </html>

@@ -8,7 +8,7 @@ Vue.component("v-autocompleter", {
         :value="value"\
         @input="$emit('input', $event.target.value)"\
          @focus='focused = true'  @keyup.down='down()' @keyup.up='up()'\
-         @keyup.enter="$emit('enter')"/> \
+         @keyup.enter="$emit('enter'); enterClicked()"/> \
         <div class='X'>\
         <img title='Wyczyść' class='inputIcon-clear' src='Grafiki/clear.svg' aria-label='Wyczyść'\
             role='button' />\
@@ -54,6 +54,7 @@ Vue.component("v-autocompleter", {
             change: false,
             inFocus: -1,
             searchedInput: '',
+            tmp:""
         }
     },
     computed:{
@@ -69,7 +70,9 @@ Vue.component("v-autocompleter", {
         // whenever question changes, this function will run
         inFocus: function () {
             this.update_filteredCities = false;
-            this.value = this.filteredCities[this.inFocus].name;
+            if(this.inFocus!=-1){
+            this.value = this.filteredCities[this.inFocus];
+            }
 
         },
         value: function () {
@@ -85,7 +88,7 @@ Vue.component("v-autocompleter", {
     methods: {
         boldenize(city) {
             let re = new RegExp(this.searchedInput, "gi");
-            let bolden = "<b>" + city.name.replace(re, match => {
+            let bolden = "<b>" + city.replace(re, match => {
                 return "<span class='normal'>" + match + "</span>";
             }) + "</b>";
 
@@ -100,7 +103,8 @@ Vue.component("v-autocompleter", {
             return this.value
         },
         selected(i) {
-            this.value = this.filteredCities[i].name;
+            this.value = this.filteredCities[i];
+            
         },
         
         down() {
@@ -121,7 +125,7 @@ Vue.component("v-autocompleter", {
         },
         createFilteredCities(yes) {
             if (yes) {
-                let result = this.options.filter(city => city.name.includes(this.value));
+                let result = this.options.filter(city => city.includes(this.value));
                 if (result.length > 10) {
                     this.filteredCities = result.slice(1, 11);
                 }
@@ -129,6 +133,7 @@ Vue.component("v-autocompleter", {
                     this.filteredCities = result;
                 }
                 this.inFocus = -1;
+                
             }
         },
         results() {
@@ -139,7 +144,7 @@ Vue.component("v-autocompleter", {
             }
             else if(  document.getElementById("app").classList.contains('results')){
                 document.getElementById("app").classList.remove('results');
-
+                this.focused=true;
             }
 
         }
