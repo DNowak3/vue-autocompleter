@@ -104,7 +104,7 @@ Vue.component("v-autocompleter", {
         },
         selected(i) {
             this.value = this.filteredCities[i];
-            
+            this.enterClicked()
         },
         
         down() {
