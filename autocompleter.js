@@ -3,11 +3,12 @@ Vue.component("v-autocompleter", {
     <div class='stripe-flex'>\
     <div class='inside'>\
         <img class='inputIcon visible' src='Grafiki/search.svg'/>\
-        <input class='inputSearch' ref='bottom' type='text' aria-label='Szukaj' maxlength='2048' v-model='googleSearch' placeholder='Szukaj'\
-         @focus='focused = true'  @keyup.down='down()' @keyup.up='up()' role='button' \
-         @keyup.enter="$emit('enter')"
-         v-bind="$attrs"
-        v-on="inputListeners"/> \
+        <input class='inputSearch' type='text' aria-label='Search' maxlength='2048'\
+        ref="placeToFocus"\
+        :value="value"\
+        @input="$emit('input', $event.target.value)"\
+         @focus='focused = true'  @keyup.down='down()' @keyup.up='up()'\
+         @keyup.enter="$emit('enter')"/> \
         <div class='X'>\
         <img title='Wyczyść' class='inputIcon-clear' src='Grafiki/clear.svg' aria-label='Wyczyść'\
             role='button' />\
@@ -19,7 +20,7 @@ Vue.component("v-autocompleter", {
         <button id='SearchButton' type='submit' aria-label='Szukaj w Google'><img class='inputIcon'\
                                 src='Grafiki/search_blue.svg' /></button>\
         </div>\
-        <div class='cityNames' :class='{visible : googleSearch.length > 0 && focused && filteredCities.length>0}' >\
+        <div class='cityNames' :class='{visible : value.length > 0 && focused && filteredCities.length>0}' >\
         <ul >\
             <li  v-for='(city,index) in filteredCities' >\
                 <div class='listElement' :class='{liFocused:index == inFocus}'>\
@@ -35,10 +36,18 @@ Vue.component("v-autocompleter", {
     model: {
         event: 'enter'
     },
-    props: ['options', 'searchvalue'],
+    props: {
+        options:{
+            type: Array
+        },
+          value: {
+            type: String,
+            default: ""
+          }
+        },
     data() {
         return {
-            googleSearch: '',
+           // value: '',
             filteredCities: "",
             update_filteredCities: true,
             focused: false,
@@ -48,38 +57,26 @@ Vue.component("v-autocompleter", {
         }
     },
     computed:{
-        //https://vuejs.org/v2/guide/components-custom-events.html
-        inputListeners: function () {
-            var vm = this
-            // `Object.assign` merges objects together to form a new object
-            return Object.assign({},
-              // We add all the listeners from the parent
-              this.$listeners,
-              // Then we can add custom listeners or override the
-              // behavior of some listeners.
-              {
-                // This ensures that the component works with v-model
-                input: function (event) {
-                  vm.$emit('input', event.target.googleSearch)
-                }
-              }
-            )
-          }
-    },
+        isActive() {
+            if (this.value.length == 0) {
+                this.change = false;
+            }
+            return this.change;
+
+        }
+     },
     watch: {
         // whenever question changes, this function will run
         inFocus: function () {
             this.update_filteredCities = false;
-            this.googleSearch = this.filteredCities[this.inFocus].name;
+            this.value = this.filteredCities[this.inFocus].name;
 
         },
-        googleSearch: function () {
+        value: function () {
             this.createFilteredCities(this.update_filteredCities);
             this.update_filteredCities = true;
-            console.log(this.filteredCities);
-
             if (this.inFocus == -1) {
-                this.searchedInput = this.googleSearch;
+                this.searchedInput = this.value;
 
             }
             this.results();
@@ -91,7 +88,6 @@ Vue.component("v-autocompleter", {
             let bolden = "<b>" + city.name.replace(re, match => {
                 return "<span class='normal'>" + match + "</span>";
             }) + "</b>";
-            console.log(bolden);
 
             return bolden;
         },
@@ -101,17 +97,12 @@ Vue.component("v-autocompleter", {
             this.inFocus = -1;
             this.focused = false;
             this.results();
+            return this.value
         },
         selected(i) {
-            this.googleSearch = this.filteredCities[i].name;
+            this.value = this.filteredCities[i].name;
         },
-        isActive() {
-            if (this.googleSearch.length == 0) {
-                this.change = false;
-            }
-            return this.change;
-
-        },
+        
         down() {
             if (this.inFocus < this.filteredCities.length - 1) {
                 this.inFocus += 1;
@@ -130,7 +121,7 @@ Vue.component("v-autocompleter", {
         },
         createFilteredCities(yes) {
             if (yes) {
-                let result = this.options.filter(city => city.name.includes(this.googleSearch));
+                let result = this.options.filter(city => city.name.includes(this.value));
                 if (result.length > 10) {
                     this.filteredCities = result.slice(1, 11);
                 }
@@ -142,7 +133,7 @@ Vue.component("v-autocompleter", {
         },
         results() {
            
-            if (this.isActive()) {
+            if (this.isActive) {
                 document.getElementById("app").classList.add('results');
 
             }
